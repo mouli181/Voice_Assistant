@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Voice-Controlled Color Change</title>
+    <style>
+      body {
+        text-align: center;
+        font-family: Arial, sans-serif;
+        transition: background 0.5s;
+      }
+      button {
+        padding: 10px 20px;
+        font-size: 18px;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Voice-Controlled Background Color</h1>
+    <button onclick="startListening()">🎤 Start Listening</button>
+    <p id="status">Say a color name (e.g., "red", "blue")</p>
+
+    <script>
+      function startListening() {
+        // Ensure Web Speech API is available
+        if (
+          !(
+            "webkitSpeechRecognition" in window || "SpeechRecognition" in window
+          )
+        ) {
+          alert(
+            "Your browser does not support the Web Speech API. Try using Google Chrome."
+          );
+          return;
+        }
+
+        const recognition = new (window.SpeechRecognition ||
+          window.webkitSpeechRecognition)();
+        recognition.lang = "en-US";
+        recognition.start();
+
+        recognition.onstart = function () {
+          document.getElementById("status").innerText = "Listening...";
+          console.log("Voice recognition started.");
+        };
+
+        recognition.onresult = function (event) {
+          const transcript = event.results[0][0].transcript
+            .toLowerCase()
+            .trim();
+          document.getElementById(
+            "status"
+          ).innerText = `You said: ${transcript}`;
+          console.log("Recognized text:", transcript);
+          changeColor(transcript);
+        };
+
+        recognition.onspeechend = function () {
+          recognition.stop();
+          console.log("Speech ended.");
+        };
+
+        recognition.onerror = function (event) {
+          console.error("Error:", event.error);
+          document.getElementById("status").innerText =
+            "Error occurred: " + event.error;
+        };
+      }
+
+      function changeColor(color) {
+        const colors = [
+          "red",
+          "blue",
+          "green",
+          "yellow",
+          "pink",
+          "purple",
+          "black",
+          "white",
+          "gray",
+          "orange",
+        ];
+        if (colors.includes(color)) {
+          document.body.style.backgroundColor = color;
+          console.log("Background changed to:", color);
+        } else {
+          alert("Color not recognized. Try saying a basic color name.");
+          console.log("Invalid color:", color);
+        }
+      }
+    </script>
+  </body>
+</html>
